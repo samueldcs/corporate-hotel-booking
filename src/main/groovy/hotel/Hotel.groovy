@@ -1,3 +1,5 @@
+package hotel
+
 class Hotel {
     int id
     String name

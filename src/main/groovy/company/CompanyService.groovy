@@ -1,3 +1,5 @@
+package company
+
 import static java.util.stream.Collectors.*
 
 class CompanyService {
@@ -19,7 +21,7 @@ class CompanyService {
     }
 
     Integer findCompanyIdByEmployee(int employeeId) {
-        return employees.find {it.id == employeeId}?.companyId
+        return findEmployee(employeeId)?.companyId
     }
 
     private Employee findEmployee(int employeeId) {

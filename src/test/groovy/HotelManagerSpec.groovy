@@ -1,3 +1,6 @@
+import hotel.HotelService
+import hotel.Room
+import hotel.RoomType
 import spock.lang.Specification
 
 class HotelManagerSpec extends Specification {
@@ -8,30 +11,30 @@ class HotelManagerSpec extends Specification {
         when:
         def firstHotelId = new Random().nextInt()
         def secondHotelId = new Random().nextInt()
-        service.addHotel(firstHotelId, "Fancy Hotel")
-        service.addHotel(secondHotelId, "Ugly Hotel")
+        service.addHotel(firstHotelId, "Fancy hotel.Hotel")
+        service.addHotel(secondHotelId, "Ugly hotel.Hotel")
 
         then:
         def firstHotel = service.findHotelBy(firstHotelId)
         firstHotel.id == firstHotelId
-        firstHotel.name == "Fancy Hotel"
+        firstHotel.name == "Fancy hotel.Hotel"
 
         def secondHotel = service.findHotelBy(secondHotelId)
         secondHotel.id == secondHotelId
-        secondHotel.name == "Ugly Hotel"
+        secondHotel.name == "Ugly hotel.Hotel"
     }
 
     def "shouldn't save hotels with overlapping ids"() {
         given:
         def hotelId = new Random().nextInt()
-        service.addHotel(hotelId, "Unique Hotel")
+        service.addHotel(hotelId, "Unique hotel.Hotel")
 
         when:
-        service.addHotel(hotelId, "Another Unique Hotel?")
+        service.addHotel(hotelId, "Another Unique hotel.Hotel?")
 
         then:
         thrown(IllegalArgumentException)
-        service.findHotelBy(hotelId).name == "Unique Hotel"
+        service.findHotelBy(hotelId).name == "Unique hotel.Hotel"
     }
 
     def "shouldn't add rooms to non-existing hotels"() {
@@ -46,7 +49,7 @@ class HotelManagerSpec extends Specification {
     def "should add rooms to existing hotels and retrieve them"() {
         given:
         def hotelId = new Random().nextInt()
-        service.addHotel(hotelId, "Hotel with Rooms")
+        service.addHotel(hotelId, "hotel.Hotel with Rooms")
 
         when:
         def roomNumber = new Random().nextInt()
@@ -56,14 +59,14 @@ class HotelManagerSpec extends Specification {
         then:
         def hotel = service.findHotelBy(hotelId)
         hotel.rooms == [new Room(roomNumber, roomType)]
-        hotel.name == "Hotel with Rooms"
+        hotel.name == "hotel.Hotel with Rooms"
     }
 
     def "should update an existing room"() {
         given:
         def hotelId = new Random().nextInt()
         def roomNumber = new Random().nextInt()
-        service.addHotel(hotelId, "Hotel to be Updated")
+        service.addHotel(hotelId, "hotel.Hotel to be Updated")
         service.setRoom(hotelId, roomNumber, RoomType.SINGLE_BED)
         service.setRoom(hotelId, 441, RoomType.SINGLE_BED)
 

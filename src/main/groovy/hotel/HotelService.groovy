@@ -1,3 +1,5 @@
+package hotel
+
 class HotelService {
 
     List<Hotel> hotels = []

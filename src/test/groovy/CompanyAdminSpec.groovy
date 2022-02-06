@@ -1,3 +1,6 @@
+import bookingpolicy.BookingPolicyService
+import company.CompanyService
+import hotel.RoomType
 import spock.lang.Specification
 
 class CompanyAdminSpec extends Specification {

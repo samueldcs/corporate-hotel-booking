@@ -1,3 +1,5 @@
+package hotel
+
 class Room {
     RoomType type
     int number

@@ -1,3 +1,8 @@
+package bookingpolicy
+
+import company.CompanyService
+import hotel.RoomType
+
 class BookingPolicyService {
 
     private final CompanyService companyService
@@ -16,15 +21,6 @@ class BookingPolicyService {
         setPolicy(employeePolicies, employeeId, roomTypes)
     }
 
-    void setPolicy(List<BookingPolicy> policies, Integer targetId, List<RoomType> roomTypes) {
-        def currentPolicy = policies.findIndexOf {it.targetId == targetId}
-        if(currentPolicy >= 0) {
-            policies[currentPolicy] = new BookingPolicy(targetId, roomTypes)
-        } else {
-            policies << new BookingPolicy(targetId, roomTypes)
-        }
-    }
-
     boolean isBookingAllowed(Integer employeeId, RoomType roomType) {
         def employeePolicy = findPolicy(employeePolicies, employeeId)
         if(employeePolicy) {
@@ -35,6 +31,15 @@ class BookingPolicyService {
             return companyPolicy.allows(roomType)
         }
         return true
+    }
+
+    private void setPolicy(List<BookingPolicy> policies, Integer targetId, List<RoomType> roomTypes) {
+        def currentPolicy = policies.findIndexOf {it.targetId == targetId}
+        if(currentPolicy >= 0) {
+            policies[currentPolicy] = new BookingPolicy(targetId, roomTypes)
+        } else {
+            policies << new BookingPolicy(targetId, roomTypes)
+        }
     }
 
     private BookingPolicy findCompanyPolicy(Integer employeeId) {

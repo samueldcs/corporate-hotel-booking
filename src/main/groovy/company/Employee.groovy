@@ -1,3 +1,5 @@
+package company
+
 class Employee {
     Integer companyId
     Integer id

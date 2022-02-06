@@ -1,3 +1,7 @@
+package bookingpolicy
+
+import hotel.RoomType
+
 class BookingPolicy {
     Integer targetId
     List<RoomType> allowedRoomTypes
