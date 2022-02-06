@@ -1,7 +1,7 @@
 class Hotel {
-    public int id
-    public String name
-    List<Room> rooms
+    int id
+    String name
+    private List<Room> rooms
 
     Hotel(int id, String name) {
         this.name = name
@@ -16,5 +16,9 @@ class Hotel {
         } else {
             rooms << room
         }
+    }
+
+    List<Room> getRooms() {
+        return rooms
     }
 }

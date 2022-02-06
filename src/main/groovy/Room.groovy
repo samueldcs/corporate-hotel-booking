@@ -1,13 +1,11 @@
 class Room {
-    protected RoomType type
-    protected int number
+    RoomType type
+    int number
 
     Room(int number, RoomType type) {
         this.number = number
         this.type = type
     }
-
-
 
     @Override
     boolean equals(final o) {
