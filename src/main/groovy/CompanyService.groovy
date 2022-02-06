@@ -1,16 +1,10 @@
-import groovy.transform.NamedParam
-import groovy.transform.NamedParams
-
-import javax.naming.Name
-import java.util.stream.Collectors
-
 import static java.util.stream.Collectors.*
 
 class CompanyService {
     List<Employee> employees = []
 
     void addEmployee(Integer companyId, Integer employeeId) {
-        def existingEmployee = employees.find {it.id == employeeId}
+        def existingEmployee = findEmployee(employeeId)
         if(!existingEmployee) {
             employees << new Employee(companyId, employeeId)
         } else {
@@ -22,5 +16,13 @@ class CompanyService {
         employees = employees.stream()
                 .filter {it.id == employeeId}
                 .collect(toList())
+    }
+
+    Integer findCompanyIdByEmployee(int employeeId) {
+        return employees.find {it.id == employeeId}?.companyId
+    }
+
+    private Employee findEmployee(int employeeId) {
+        employees.find { it.id == employeeId }
     }
 }
