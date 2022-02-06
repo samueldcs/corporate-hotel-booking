@@ -2,13 +2,13 @@ import bookingpolicy.BookingPolicyService
 import hotel.EmployeeService
 import hotel.Hotel
 import hotel.HotelService
+import hotel.Room
+import hotel.RoomType
 import spock.lang.Specification
 
-import java.time.Duration
 import java.time.Instant
 
 import static hotel.RoomType.*
-import static java.time.Instant.now
 
 class EmployeeSpec extends Specification {
 
@@ -17,12 +17,20 @@ class EmployeeSpec extends Specification {
     BookingPolicyService bookingPolicyService = Mock()
     EmployeeService employeeService = new EmployeeService(hotelService, bookingPolicyService)
 
-    def "should book a room for one day when the hotel exists and policies allow"() {
-        def hotelId = new Random().nextInt()
-        def employeeId = new Random().nextInt()
+    Integer hotelId
+    Integer employeeId
+    Hotel hotelWithASingleBedRoom
 
+    void setup() {
+        hotelId = new Random().nextInt()
+        employeeId = new Random().nextInt()
+        hotelWithASingleBedRoom = new Hotel(hotelId,"Mock Hotel with a single bed room")
+        hotelWithASingleBedRoom.addRoom(new Room(190, SINGLE_BED))
+    }
+
+    def "should book a room for one day when the hotel exists and policies allow"() {
         given:
-        hotelService.findHotelBy(hotelId) >> new Hotel(hotelId, "Mocked Hotel")
+        hotelService.findHotelBy(hotelId) >> hotelWithASingleBedRoom
         bookingPolicyService.isBookingAllowed(employeeId, SINGLE_BED) >> true
 
         when:
@@ -43,11 +51,8 @@ class EmployeeSpec extends Specification {
     }
 
     def "shouldn't book a room for less than one day"() {
-        def hotelId = new Random().nextInt()
-        def employeeId = new Random().nextInt()
-
         given:
-        hotelService.findHotelBy(hotelId) >> new Hotel(hotelId, "Mocked Hotel")
+        hotelService.findHotelBy(hotelId) >> hotelWithASingleBedRoom
         bookingPolicyService.isBookingAllowed(employeeId, SINGLE_BED) >> true
 
         when:
@@ -59,7 +64,42 @@ class EmployeeSpec extends Specification {
         thrown(IllegalArgumentException)
     }
 
-    private Date tomorrow() {
-        Date.from now() + Duration.ofDays(1)
+    def "shouldn't book a room if policies don't allow it"() {
+        given:
+        hotelService.findHotelBy(hotelId) >> hotelWithASingleBedRoom
+        bookingPolicyService.isBookingAllowed(employeeId, SINGLE_BED) >> false
+
+        when:
+        Date checkIn = Date.from(Instant.ofEpochSecond(10))
+        employeeService.book(employeeId, hotelId, SINGLE_BED, checkIn, new Date())
+
+        then:
+        thrown(IllegalArgumentException)
+    }
+
+    def "shouldn't book on a non-existing hotel"() {
+        given:
+        hotelService.findHotelBy(hotelId) >> null
+        bookingPolicyService.isBookingAllowed(employeeId, SINGLE_BED) >> true
+
+        when:
+        Date checkIn = Date.from(Instant.ofEpochSecond(10))
+        employeeService.book(employeeId, hotelId, SINGLE_BED, checkIn, new Date())
+
+        then:
+        thrown(IllegalArgumentException)
+    }
+
+    def "shouldn't book on a hotel that doesn't offer the requested room"() {
+        given: "a hotel with a single bed room"
+        hotelService.findHotelBy(hotelId) >> hotelWithASingleBedRoom
+        bookingPolicyService.isBookingAllowed(employeeId, LUXURY) >> true
+
+        when: "a booking for a luxury room is requested"
+        Date checkIn = Date.from(Instant.ofEpochSecond(10))
+        employeeService.book(employeeId, hotelId, LUXURY, checkIn, new Date())
+
+        then:
+        thrown(IllegalArgumentException)
     }
 }
