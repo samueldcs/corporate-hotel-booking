@@ -1,3 +1,4 @@
+import hotel.Booking
 import hotel.HotelService
 import hotel.Room
 import hotel.RoomType
@@ -79,5 +80,19 @@ class HotelManagerSpec extends Specification {
                 new Room(roomNumber, RoomType.DOUBLE_BED),
                 new Room(441, RoomType.SINGLE_BED)
         ]
+    }
+
+    def "should update an existing hotel"() {
+        given:
+        def hotelId = new Random().nextInt()
+        service.addHotel(hotelId, "Hotel to be Updated")
+
+        when:
+        def booking = new Booking(9090, 55, hotelId, new Date(), new Date(), RoomType.TRIPLE_BED)
+        service.updateBookingStatus(booking)
+
+        then:
+        def hotel = service.findHotelBy(hotelId)
+        hotel.bookings == [booking]
     }
 }

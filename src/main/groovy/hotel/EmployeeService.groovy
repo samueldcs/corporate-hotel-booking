@@ -16,20 +16,19 @@ class EmployeeService {
 
     Booking book(Integer employeeId, Integer hotelId, RoomType roomType, Date checkIn, Date checkOut) {
         def hotel = hotelService.findHotelBy(hotelId)
-
         def policyAllows = bookingPolicyService.isBookingAllowed(employeeId, roomType)
-        if(hotel && isBookingForAtLeastOneDay(checkIn, checkOut) && policyAllows) {
-            def hotelOffersRoom = hotel.rooms.any {it.type == roomType}
-            if(hotelOffersRoom) {
-                return new Booking(
-                        new Random().nextInt(Integer.MAX_VALUE),
-                        employeeId,
-                        hotelId,
-                        checkIn,
-                        checkOut,
-                        roomType
-                )
-            }
+
+        if (hotel?.allowsBooking(roomType, checkIn, checkOut) && isBookingForAtLeastOneDay(checkIn, checkOut) && policyAllows) {
+            def booking = new Booking(
+                    new Random().nextInt(Integer.MAX_VALUE),
+                    employeeId,
+                    hotelId,
+                    checkIn,
+                    checkOut,
+                    roomType
+            )
+            hotelService.updateBookingStatus(booking)
+            return booking
         }
         throw new IllegalArgumentException()
     }

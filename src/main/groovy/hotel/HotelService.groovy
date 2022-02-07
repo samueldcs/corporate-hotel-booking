@@ -23,4 +23,9 @@ class HotelService {
     def findHotelBy(hotelId) {
         hotels.find {it.id == hotelId}
     }
+
+    void updateBookingStatus(Booking booking) {
+        hotels.find {it.id == booking.hotelId}
+            .addBooking(booking)
+    }
 }
